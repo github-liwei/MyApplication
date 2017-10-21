@@ -4,7 +4,6 @@
                 android:layout_height="60dp"
                 android:background="#ffffff"
 >
-
     <ImageView
             android:src="@android:drawable/ic_input_get"
             android:id="@+id/iv_child_icon"
@@ -19,6 +18,12 @@
             android:layout_toRightOf="@id/iv_child_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+    <Button android:background="@android:color/transparent"
+            android:text="@+id/bt_child_id"
+            android:id="@+id/bt_child_id"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="#ffffff"/>
     <TextView
             android:layout_marginTop="5dp"
             android:text="描述"

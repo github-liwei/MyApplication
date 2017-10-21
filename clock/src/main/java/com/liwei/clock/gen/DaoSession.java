@@ -16,7 +16,7 @@ import com.liwei.clock.gen.UserDao;
 
 /**
  * {@inheritDoc}
- *
+ * 
  * @see org.greenrobot.greendao.AbstractDaoSession
  */
 public class DaoSession extends AbstractDaoSession {

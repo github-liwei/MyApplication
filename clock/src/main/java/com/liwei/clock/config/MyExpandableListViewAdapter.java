@@ -1,32 +1,38 @@
 package com.liwei.clock.config;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
+import com.liwei.clock.activity.InnerItemOnclickListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ListView适配器
  * Created by LIWEI on 2017/10/19.
  */
-public class MyExpandableListViewAdapter extends BaseExpandableListAdapter {
-
+public class MyExpandableListViewAdapter extends BaseExpandableListAdapter implements View.OnClickListener {
+    private InnerItemOnclickListener mListener;
     private Context context;
     private LayoutInflater inflater;
 
-    private String[] group = new String[]{"我的好友", "同学", "同事", "GirlFriends"};
-    private String[][] childs = new String[][]{{"习大大", "李克强", "普京", "金正恩", "安倍晋三"},
-            {"刘铁男", "万庆良", "周永康", "徐才厚", "谷俊山", "令计划", "郭伯雄", "苏荣", "陈水扁", "蒋洁敏", "李东生", "白恩培"},
-            {"马云", "麻花藤", "李彦宏", "周鸿祎", "雷布斯", "库克"},
-            {"李冰冰", "范冰冰", "李小璐", "杨颖", "周冬雨", "Lady GaGa", "千颂伊", "尹恩惠"}};
+    private String[] group = new String[]{"我的好友"};
+    private List<List<UserInfo>> childs = new ArrayList<>();
 
-    public MyExpandableListViewAdapter(Context context) {
+    public MyExpandableListViewAdapter(Context context, List<UserInfo> list) {
         this.context = context;
         inflater = LayoutInflater.from(context);
+        childs.add(0, list);
+        Log.i(this.getClass().toString(), list.toString());
     }
 
     @Override
@@ -36,7 +42,7 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int i) {
-        return childs[i].length;
+        return childs.get(i).size();
     }
 
     @Override
@@ -46,7 +52,7 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int i, int i1) {
-        return childs[i][i1];
+        return childs.get(i).get(i1).getUserName();
     }
 
     @Override
@@ -73,7 +79,7 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter {
         TextView tv_group_number = view.findViewById(R.id.tv_group_number);
 
         tv_group_name.setText(group[i]);
-        tv_group_number.setText(childs[i].length + "/" + childs[i].length);
+        tv_group_number.setText(childs.get(i).size() + "/" + childs.get(i).size());
 
         //TODO b 子列表是否展开,判断后设置图标
         if (b) {
@@ -87,15 +93,30 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int i, int i1, boolean b, View convertView, ViewGroup viewGroup) {
+
+//        final ViewHolder viewHolder;
+//        if (convertView == null) {
+//            viewHolder = new ViewHolder();
+//            convertView = LayoutInflater.from(context).inflate(R.layout.item_elv_child,
+//                    null);
+//            viewHolder.bt1 = convertView.findViewById(R.id.bt_child_id);
+//            convertView.setTag(viewHolder);
+//        } else {
+//            viewHolder = (ViewHolder) convertView.getTag();
+//        }
         View view = inflater.inflate(R.layout.item_elv_child, null);
         //TODO 设置  child 的图标和 信息
         ImageView iv_child_icon = view.findViewById(R.id.iv_child_icon);
         TextView tv_child_info = view.findViewById(R.id.tv_child_info);
+        Button bt_child_id = view.findViewById(R.id.bt_child_id);
 
         TextView tv_child_name = view.findViewById(R.id.tv_child_name);
         TextView tv_child_network = view.findViewById(R.id.tv_child_network);
 
-        tv_child_name.setText(childs[i][i1]);
+        bt_child_id.setText(childs.get(i).get(i1).getUserName());
+        bt_child_id.setOnClickListener(this);
+        tv_child_info.setText(childs.get(i).get(i1).getNickname());
+        tv_child_name.setText(childs.get(i).get(i1).getUserName());
         tv_child_network.setText(i1 % 2 == 0 ? "5G" : "6G");
         return view;
     }
@@ -103,5 +124,19 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int i, int i1) {
         return true;
+    }
+
+    public final static class ViewHolder {
+        Button bt1, bt2;
+        TextView tv;
+    }
+
+    public void setOnInnerItemOnClickListener(InnerItemOnclickListener listener) {
+        this.mListener = listener;
+    }
+
+    @Override
+    public void onClick(View v) {
+        mListener.itemClick(v);
     }
 }

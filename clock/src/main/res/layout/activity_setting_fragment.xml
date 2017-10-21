@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_setting_fragment"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="com.liwei.clock.activity.SettingFragment">
+
+    <Button
+            android:id="@+id/bt_login_view"
+            android:layout_width="wrap_content"
+            android:text="登录界面"
+            android:layout_height="wrap_content"/>
+    <Button
+            android:id="@+id/bt_register_view"
+            android:layout_width="wrap_content"
+            android:text="注册界面"
+            android:layout_height="wrap_content"/>
+    <Button
+            android:id="@+id/bt_update_user_view"
+            android:text="修改资料"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+    />
+    <Button
+            android:id="@+id/bt_logout"
+            android:text="退出"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+    />
+
+</LinearLayout>

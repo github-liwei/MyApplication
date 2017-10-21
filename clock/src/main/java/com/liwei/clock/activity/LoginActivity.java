@@ -40,7 +40,7 @@ public class LoginActivity extends Activity {
         if (myInfo != null) {
             Log.e(CommonData.ETAG, "onCreate: 用户已经登录" + myInfo.getUserName());
             Intent intent = new Intent();
-            intent.setClass(getApplicationContext(), MenuActivity.class);
+            intent.setClass(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
         } else {
@@ -57,7 +57,7 @@ public class LoginActivity extends Activity {
                                 Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
                                 Log.i(CommonData.ITAG, "JMessageClient.login" + ", responseCode = " + i + " ; LoginDesc = " + s);
                                 Intent intent = new Intent();
-                                intent.setClass(getApplicationContext(), MenuActivity.class);
+                                intent.setClass(getApplicationContext(), MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {

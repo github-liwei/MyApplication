@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.liwei.clock">
+
     <permission
             android:name="com.liwei.clock.permission.JPUSH_MESSAGE"
             android:protectionLevel="signature"/>
@@ -111,24 +112,32 @@
                 android:name="JPUSH_APPKEY"
                 android:value="3abd49c44990c7313d96a21a"/>
 
-        <activity android:name=".activity.MainActivity"
-                  android:label="主页">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RegisterActivity"
-                  android:label="注册">
+        <activity
+                android:name=".activity.RegisterActivity"
+                android:label="注册">
         </activity>
-        <activity android:name=".activity.MenuActivity"
-                  android:label="联系人"
-        >
+        <activity
+                android:name=".activity.MenuActivity"
+                android:label="联系人">
         </activity>
         <activity
                 android:name=".activity.LoginActivity"
                 android:label="@string/title_activity_login">
+        </activity>
+        <activity android:name=".activity.MessageFragment">
+        </activity>
+        <activity android:name=".activity.ContactsFragment">
+        </activity>
+        <activity android:name=".activity.NewsFragment">
+        </activity>
+        <activity android:name=".activity.SettingFragment">
         </activity>
     </application>
 
