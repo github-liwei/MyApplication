@@ -2,8 +2,6 @@ package com.liwei.clock.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,16 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import cn.jpush.im.android.api.ContactManager;
-import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
-import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
 import com.liwei.clock.R;
-import com.liwei.clock.config.CommonData;
+import com.liwei.clock.interfaceclass.CommonData;
 import com.liwei.clock.config.MyExpandableListViewAdapter;
+import com.liwei.clock.interfaceclass.impl.OnClickChilds;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ContactsFragment extends Fragment {
@@ -82,7 +78,6 @@ public class ContactsFragment extends Fragment {
                         adapter.setOnInnerItemOnClickListener(new OnClickChilds());
                          /* 1. 设置适配器*/
                         expandableListView.setAdapter(adapter);
-
                         Log.e(CommonData.ETAG, "列表加载");
                     }
                 } else {
@@ -123,5 +118,11 @@ public class ContactsFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
     }
 }

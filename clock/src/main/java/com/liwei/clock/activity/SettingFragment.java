@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
-import com.liwei.clock.config.CommonData;
+import com.liwei.clock.interfaceclass.CommonData;
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
     private Button btLogin;
@@ -75,10 +74,19 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                 JMessageClient.logout();
                 intent.setClass(context, LoginActivity.class);
                 startActivity(intent);
+
+                //TODO  销毁的是MainActivity和它上面所有Fragment
+                getActivity().finish();
                 break;
             default:
                 Toast.makeText(context, "没找到按钮", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
     }
 }

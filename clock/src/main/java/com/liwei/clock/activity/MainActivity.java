@@ -2,26 +2,23 @@ package com.liwei.clock.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
-import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
-import com.liwei.clock.config.CommonData;
+import com.liwei.clock.interfaceclass.CommonData;
 import com.liwei.clock.config.UserrtAssert;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static int ADDUSUR = 0;
-
+    public static MainActivity mainActivity = null;
     /**
      * 用于展示 消息、好友列表、新消息、设置 的Fragment
      */
@@ -61,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (UserrtAssert.userInfo(getApplicationContext())) {
+        // mainActivity = this;
+        if (UserrtAssert.userInfo(this)) {
             Log.i(CommonData.ETAG, "onCreate: 退出这个界面 ");
             finish();
         }
@@ -78,9 +76,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        //关闭监听事件
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
+        Log.e(this.getClass().getSimpleName(), "onDestroy: 关闭 JMessageClient 监听");
+
         JMessageClient.unRegisterEventReceiver(this);
     }
 
@@ -265,5 +265,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-
 }

@@ -1,4 +1,4 @@
-package com.liwei.clock.activity;
+package com.liwei.clock.interfaceclass;
 
 import android.view.View;
 

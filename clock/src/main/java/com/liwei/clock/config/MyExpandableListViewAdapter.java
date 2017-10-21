@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
-import com.liwei.clock.activity.InnerItemOnclickListener;
+import com.liwei.clock.interfaceclass.InnerItemOnclickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,11 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
         inflater = LayoutInflater.from(context);
         childs.add(0, list);
         Log.i(this.getClass().toString(), list.toString());
+    }
+
+    //注入事件的实现方法实体方法
+    public void setOnInnerItemOnClickListener(InnerItemOnclickListener listener) {
+        this.mListener = listener;
     }
 
     @Override
@@ -131,10 +136,7 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
         TextView tv;
     }
 
-    public void setOnInnerItemOnClickListener(InnerItemOnclickListener listener) {
-        this.mListener = listener;
-    }
-
+    //添加的事件
     @Override
     public void onClick(View v) {
         mListener.itemClick(v);

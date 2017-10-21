@@ -1,4 +1,4 @@
-package com.liwei.clock.config;
+package com.liwei.clock.interfaceclass;
 
 /**
  * Created by LIWEI on 2017/10/19.

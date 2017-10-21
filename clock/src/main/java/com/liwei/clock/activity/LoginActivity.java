@@ -11,7 +11,7 @@ import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
 import com.liwei.clock.R;
-import com.liwei.clock.config.CommonData;
+import com.liwei.clock.interfaceclass.CommonData;
 
 public class LoginActivity extends Activity {
 
@@ -69,6 +69,11 @@ public class LoginActivity extends Activity {
                 }
             });
         }
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
     }
 }
