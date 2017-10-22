@@ -11,7 +11,7 @@ import android.widget.Toast;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.api.BasicCallback;
 import com.liwei.clock.R;
-import com.liwei.clock.interfaceclass.CommonData;
+import com.liwei.clock.interfaceclass.DataC;
 
 public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
@@ -46,13 +46,13 @@ public class RegisterActivity extends AppCompatActivity {
                     public void gotResult(int i, String s) {
                         if (i == 0) {
                             Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_SHORT).show();
-                            Log.i(CommonData.ITAG, "JMessageClient.register " + ", responseCode = " + i + " ; registerDesc = " + s);
+                            Log.i(DataC.ITAG, "JMessageClient.register " + ", responseCode = " + i + " ; registerDesc = " + s);
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
                             Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_SHORT).show();
-                            Log.e(CommonData.ETAG, "JMessageClient.register " + ", responseCode = " + i + " ; registerDesc = " + s);
+                            Log.e(DataC.ETAG, "JMessageClient.register " + ", responseCode = " + i + " ; registerDesc = " + s);
                         }
                     }
                 });

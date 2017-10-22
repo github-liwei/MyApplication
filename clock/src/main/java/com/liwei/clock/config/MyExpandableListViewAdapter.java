@@ -1,6 +1,6 @@
 package com.liwei.clock.config;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +22,15 @@ import java.util.List;
  */
 public class MyExpandableListViewAdapter extends BaseExpandableListAdapter implements View.OnClickListener {
     private InnerItemOnclickListener mListener;
-    private Context context;
+    private Activity activity;
     private LayoutInflater inflater;
 
     private String[] group = new String[]{"我的好友"};
     private List<List<UserInfo>> childs = new ArrayList<>();
 
-    public MyExpandableListViewAdapter(Context context, List<UserInfo> list) {
-        this.context = context;
-        inflater = LayoutInflater.from(context);
+    public MyExpandableListViewAdapter(Activity activity, List<UserInfo> list) {
+        this.activity = activity;
+        inflater = LayoutInflater.from(activity.getApplicationContext());
         childs.add(0, list);
         Log.i(this.getClass().toString(), list.toString());
     }
@@ -98,32 +98,23 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
 
     @Override
     public View getChildView(int i, int i1, boolean b, View convertView, ViewGroup viewGroup) {
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.item_elv_child, null);
+        }
 
-//        final ViewHolder viewHolder;
-//        if (convertView == null) {
-//            viewHolder = new ViewHolder();
-//            convertView = LayoutInflater.from(context).inflate(R.layout.item_elv_child,
-//                    null);
-//            viewHolder.bt1 = convertView.findViewById(R.id.bt_child_id);
-//            convertView.setTag(viewHolder);
-//        } else {
-//            viewHolder = (ViewHolder) convertView.getTag();
-//        }
-        View view = inflater.inflate(R.layout.item_elv_child, null);
         //TODO 设置  child 的图标和 信息
-        ImageView iv_child_icon = view.findViewById(R.id.iv_child_icon);
-        TextView tv_child_info = view.findViewById(R.id.tv_child_info);
-        Button bt_child_id = view.findViewById(R.id.bt_child_id);
+        ImageView iv_child_icon = convertView.findViewById(R.id.iv_child_icon);
+        TextView tv_child_info = convertView.findViewById(R.id.tv_child_info);
+        Button bt_child_id = convertView.findViewById(R.id.bt_child_id);
 
-        TextView tv_child_name = view.findViewById(R.id.tv_child_name);
-        TextView tv_child_network = view.findViewById(R.id.tv_child_network);
-
+        TextView tv_child_name = convertView.findViewById(R.id.tv_child_name);
+        TextView tv_child_network = convertView.findViewById(R.id.tv_child_network);
         bt_child_id.setText(childs.get(i).get(i1).getUserName());
         bt_child_id.setOnClickListener(this);
-        tv_child_info.setText(childs.get(i).get(i1).getNickname());
-        tv_child_name.setText(childs.get(i).get(i1).getUserName());
+        tv_child_info.setText(childs.get(i).get(i1).getUserName());
+        tv_child_name.setText(childs.get(i).get(i1).getNickname());
         tv_child_network.setText(i1 % 2 == 0 ? "5G" : "6G");
-        return view;
+        return convertView;
     }
 
     @Override
@@ -131,14 +122,9 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
         return true;
     }
 
-    public final static class ViewHolder {
-        Button bt1, bt2;
-        TextView tv;
-    }
-
     //添加的事件
     @Override
     public void onClick(View v) {
-        mListener.itemClick(v);
+        mListener.itemClick(v, activity);
     }
 }

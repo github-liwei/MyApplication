@@ -25,7 +25,7 @@ public class MyApplication extends Application {
         instances = this;
         setDatabase();
 
-        JMessageClient.setDebugMode(true);
+        JMessageClient.setDebugMode(false);
         JMessageClient.init(getApplicationContext(), true);
     }
 

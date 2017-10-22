@@ -14,7 +14,7 @@ import android.widget.Toast;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
-import com.liwei.clock.interfaceclass.CommonData;
+import com.liwei.clock.interfaceclass.DataC;
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
     private Button btLogin;
@@ -55,7 +55,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
             case R.id.bt_login_view:
                 UserInfo myInfo = JMessageClient.getMyInfo();
                 if (myInfo != null) {
-                    Log.e(CommonData.ETAG, "onCreate: 用户已经登录" + myInfo.getUserName());
+                    Log.e(DataC.ETAG, "onCreate: 用户已经登录" + myInfo.getUserName());
                 } else {
                     intent.setClass(context, LoginActivity.class);
                     startActivity(intent);

@@ -2,23 +2,39 @@ package com.liwei.clock.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.content.CustomContent;
+import cn.jpush.im.android.api.enums.ConversationType;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
+import cn.jpush.im.android.api.event.ConversationRefreshEvent;
+import cn.jpush.im.android.api.event.MessageEvent;
+import cn.jpush.im.android.api.event.OfflineMessageEvent;
+import cn.jpush.im.android.api.model.Conversation;
+import cn.jpush.im.android.api.model.Message;
+import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
-import com.liwei.clock.interfaceclass.CommonData;
+import com.liwei.clock.config.LogMy;
 import com.liwei.clock.config.UserrtAssert;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static int ADDUSUR = 0;
-    public static MainActivity mainActivity = null;
+    public final static String action = "MainActivityAction";
+    //默认页面
+    private static int currentPage = 1;
     /**
      * 用于展示 消息、好友列表、新消息、设置 的Fragment
      */
@@ -49,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView contactsText;
     private TextView newsText;
     private TextView settingText;
+    private TextView offlineMsgText;
+    private TextView refreshEventText;
 
     /**
      * 用于对Fragment进行管理
@@ -58,33 +76,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // mainActivity = this;
         if (UserrtAssert.userInfo(this)) {
-            Log.i(CommonData.ETAG, "onCreate: 退出这个界面 ");
+            LogMy.e(this.getClass(), "onCreate: 退出这个界面 ");
             finish();
         }
-
+        initView();
+        initData();
+    }
+    void initView() {
         //监听事件开启
-        Log.i(CommonData.ITAG, "开启事件监听");
+        LogMy.e(this.getClass(), "开启事件监听");
         JMessageClient.registerEventReceiver(this);
 
-        initView();
-        fragmentManager = getFragmentManager();
-        // 第一次启动时选中第0个tab
-        setTabSelection(1);
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
-        Log.e(this.getClass().getSimpleName(), "onDestroy: 关闭 JMessageClient 监听");
-
-        JMessageClient.unRegisterEventReceiver(this);
-    }
-
-    void initView() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
@@ -100,10 +103,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         contactsText = (TextView) findViewById(R.id.contacts_text);
         newsText = (TextView) findViewById(R.id.news_text);
         settingText = (TextView) findViewById(R.id.setting_text);
+        offlineMsgText = (TextView) findViewById(R.id.tv_showOfflineMsg);
+        refreshEventText = (TextView) findViewById(R.id.tv_refresh_event_msg);
         messageLayout.setOnClickListener(this);
         contactsLayout.setOnClickListener(this);
         newsLayout.setOnClickListener(this);
         settingLayout.setOnClickListener(this);
+    }
+
+    void initData() {
+        fragmentManager = getFragmentManager();
+        //在FragmentManager里面根据Tag去找相应的fragment. 用户屏幕发生旋转，重新调用onCreate方法。否则会发生重叠
+        messageFragment = (MessageFragment) fragmentManager.findFragmentByTag("mes");
+        contactsFragment = (ContactsFragment) fragmentManager.findFragmentByTag("con");
+        newsFragment = (NewsFragment) fragmentManager.findFragmentByTag("new");
+        settingFragment = (SettingFragment) fragmentManager.findFragmentByTag("set");
+        // 第一次启动时选中第0个tab
+        setTabSelection(currentPage);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LogMy.e(this.getClass(), "onDestroy: 正在销毁");
+        LogMy.e(this.getClass(), "onDestroy: 关闭 JMessageClient 监听");
+        JMessageClient.unRegisterEventReceiver(this);
     }
 
     @Override
@@ -132,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 根据传入的index参数来设置选中的tab页。
-     *
      * @param index 每个tab页对应的下标。0表示消息，1表示联系人，2表示动态，3表示设置。
      */
     private void setTabSelection(int index) {
@@ -150,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (messageFragment == null) {
                     // 如果MessageFragment为空，则创建一个并添加到界面上
                     messageFragment = new MessageFragment();
-                    transaction.add(R.id.main_context, messageFragment);
+                    transaction.add(R.id.main_context, messageFragment, "mes");
                 } else {
                     // 如果MessageFragment不为空，则直接将它显示出来
                     transaction.show(messageFragment);
@@ -163,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (contactsFragment == null) {
                     // 如果ContactsFragment为空，则创建一个并添加到界面上
                     contactsFragment = new ContactsFragment();
-                    transaction.add(R.id.main_context, contactsFragment);
+                    transaction.add(R.id.main_context, contactsFragment, "con");
                 } else {
                     // 如果ContactsFragment不为空，则直接将它显示出来
                     transaction.show(contactsFragment);
@@ -176,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (newsFragment == null) {
                     // 如果NewsFragment为空，则创建一个并添加到界面上
                     newsFragment = new NewsFragment();
-                    transaction.add(R.id.main_context, newsFragment);
+                    transaction.add(R.id.main_context, newsFragment, "new");
                 } else {
                     // 如果NewsFragment不为空，则直接将它显示出来
                     transaction.show(newsFragment);
@@ -190,13 +213,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (settingFragment == null) {
                     // 如果SettingFragment为空，则创建一个并添加到界面上
                     settingFragment = new SettingFragment();
-                    transaction.add(R.id.main_context, settingFragment);
+                    transaction.add(R.id.main_context, settingFragment, "set");
                 } else {
                     // 如果SettingFragment不为空，则直接将它显示出来
                     transaction.show(settingFragment);
                 }
                 break;
         }
+        this.currentPage = index;
         transaction.commit();
     }
 
@@ -235,34 +259,142 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //监听好友添加
-    void onEvent(ContactNotifyEvent event) {
-        String reason = event.getReason();
+    public void onEvent(ContactNotifyEvent event) {
         String fromUsername = event.getFromUsername();
-        String appkey = event.getfromUserAppKey();
         if (ContactsFragment.tvUserAdd == null) {
-            Log.e(CommonData.ETAG, "页面还没初始化");
+            LogMy.e(this.getClass(), "页面还没初始化");
         } else {
             switch (event.getType()) {
                 case invite_received://收到好友邀请
-                    Log.i(CommonData.ITAG, "收到好友邀请" + fromUsername);
+                    LogMy.e(this.getClass(), "收到好友邀请" + fromUsername);
                     ADDUSUR = ADDUSUR++;
                     ContactsFragment.tvUserAdd.setText(ADDUSUR);
                     break;
                 case invite_accepted://对方接收了你的好友邀请
-                    Log.i(CommonData.ITAG, "对方接收了你的好友邀请");
+                    LogMy.e(this.getClass(), "对方接收了你的好友邀请");
                     ADDUSUR = ADDUSUR++;
                     ContactsFragment.tvUserAdd.setText(ADDUSUR);
                     break;
                 case invite_declined://对方拒绝了你的好友邀请
-                    Log.i(CommonData.ITAG, "对方拒绝了你的好友邀请");
+                    LogMy.e(this.getClass(), "对方拒绝了你的好友邀请");
                     ADDUSUR = ADDUSUR++;
                     break;
                 case contact_deleted://对方将你从好友中删除
-                    Log.i(CommonData.ITAG, "对方将你从好友中删除");
+                    LogMy.e(this.getClass(), "对方将你从好友中删除");
                     break;
                 default:
                     break;
             }
         }
     }
+
+    public void onEvent(MessageEvent event) {
+        Message msg = event.getMessage();
+        switch (msg.getContentType()) {
+            case custom:
+                final ConversationType targetType = event.getMessage().getTargetType();
+                final Intent intent = new Intent(action);
+                CustomContent customContent = (CustomContent) msg.getContent();
+                Map allStringValues = customContent.getAllStringValues();
+                if (targetType.equals(ConversationType.group)) {
+                    //TODO 还未实现
+                    LogMy.e(this.getClass(), "MessageEvent 来个组消息");
+//                    intent.putExtra(CREATE_GROUP_CUSTOM_KEY, allStringValues.toString());
+//                    intent.setFlags(1);
+                } else if (targetType.equals(ConversationType.single)) {
+                    String _userYou = ChatActivity.userYou.trim();
+                    if (_userYou.equals("")) {
+                        LogMy.e(this.getClass(), "MessageEvent userYou为空");
+                    } else {
+                        UserInfo fromUser = msg.getFromUser();
+                        if (fromUser.getUserName().equals(_userYou)) {
+                            LogMy.e(this.getClass(), "MessageEvent 来个single消息");
+                            intent.putExtra(ChatActivity.CHATKEY, allStringValues.toString());
+                            sendBroadcast(intent);
+                        }
+                        LogMy.e(this.getClass(), "MessageEvent 您不在这个聊天窗口所以无法刷新页面");
+                    }
+                }
+                break;
+            //其实sdk是会自动下载语音的.本方法是当sdk自动下载失败时可以手动调用进行下载而设计的.同理于缩略图下载
+            case voice:
+                LogMy.e(this.getClass(), "接收到了语音消息");
+                break;
+            case eventNotification:
+                LogMy.e(this.getClass(), "接收到了 eventNotification");
+                break;
+            case image:
+                LogMy.e(this.getClass(), "接收到了图片消息");
+                break;
+            default:
+                break;
+        }
+    }
+
+    //离线消息事件
+    public void onEventMainThread(OfflineMessageEvent event) {
+        Intent intent = new Intent(MainActivity.action);
+        Conversation conversation = event.getConversation();
+        List<Message> newMessageList = event.getOfflineMessageList();//获取此次离线期间会话收到的新消息列表
+        List<Integer> offlineMsgIdList = new ArrayList<>();
+        if (conversation != null && newMessageList != null) {
+            for (Message msg : newMessageList) {
+                offlineMsgIdList.add(msg.getId());
+            }
+
+            String _userYou = ChatActivity.userYou.trim();
+            if (_userYou.equals("")) {
+                LogMy.e(this.getClass(), "OfflineMessageEvent userYou为空");
+            } else {
+                LogMy.e(this.getClass(), "OfflineMessageEvent 来个离线single消息");
+                intent.putExtra(ChatActivity.CHATKEY, "离线消息个数" + newMessageList.size());
+                sendBroadcast(intent);
+            }
+            offlineMsgText.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
+            offlineMsgText.append("会话类型 = " + conversation.getType() + "\n消息ID = " + offlineMsgIdList + "\n\n");
+        } else {
+            offlineMsgText.setText("conversation is null or new message list is nul");
+        }
+    }
+
+    //漫游消息
+    public void onEventMainThread(ConversationRefreshEvent event) {
+        Conversation conversation = event.getConversation();
+        ConversationRefreshEvent.Reason reason = event.getReason();
+        if (conversation != null) {
+            refreshEventText.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到ConversationRefreshEvent事件,待刷新的会话是%s.\n", conversation.getTargetId()));
+            refreshEventText.append("事件发生的原因 : " + reason + "\n");
+        } else {
+            refreshEventText.setText("conversation is null");
+        }
+    }
+
+
+    /**
+     * 在一个主界面(主Activity)上能连接往许多不同子功能模块(子Activity上去)，当子模块的事情做完之后就回到主界面，
+     * 或许还同时返回一些子模块完成的数据交给主Activity处理。这样的数据交流就要用到回调函数onActivityResult。
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == 8) {
+            offlineMsgText.setText("");
+            refreshEventText.setText("");
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }

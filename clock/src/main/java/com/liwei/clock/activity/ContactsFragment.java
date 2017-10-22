@@ -13,7 +13,7 @@ import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
 import com.liwei.clock.R;
-import com.liwei.clock.interfaceclass.CommonData;
+import com.liwei.clock.interfaceclass.DataC;
 import com.liwei.clock.config.MyExpandableListViewAdapter;
 import com.liwei.clock.interfaceclass.impl.OnClickChilds;
 
@@ -22,7 +22,6 @@ import java.util.List;
 public class ContactsFragment extends Fragment {
     /*可拓展列表视图*/
     private ExpandableListView expandableListView;
-    private List<UserInfo> childs;
 
     private SearchView searchView;
     public static TextView tvUserAdd;
@@ -32,7 +31,6 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View Layout = inflater.inflate(R.layout.activity_contacts_fragment, container, false);
         activity = getActivity();
-
         return Layout;
     }
 
@@ -43,29 +41,11 @@ public class ContactsFragment extends Fragment {
         initData();
     }
 
-
     void initView() {
         expandableListView = activity.findViewById(R.id.elv);
         searchView = activity.findViewById(R.id.search_user);
         tvUserAdd = activity.findViewById(R.id.tv_user_add_message);
     }
-
-    List<UserInfo> getFriends() {
-        ContactManager.getFriendList(new GetUserInfoListCallback() {
-            @Override
-            public void gotResult(int i, String s, List<UserInfo> list) {
-                if (0 == i) {
-                    childs = list;
-                } else {
-                    //获取好友列表失败
-                    childs = null;
-                    Log.e(CommonData.ETAG, "获取好友列表失败");
-                }
-            }
-        });
-        return childs;
-    }
-
 
     void initData() {
         /* 1.1 创建一个adapter实例*/
@@ -78,12 +58,11 @@ public class ContactsFragment extends Fragment {
                         adapter.setOnInnerItemOnClickListener(new OnClickChilds());
                          /* 1. 设置适配器*/
                         expandableListView.setAdapter(adapter);
-                        Log.e(CommonData.ETAG, "列表加载");
+                        Log.e(DataC.ETAG, "列表加载");
                     }
                 } else {
                     //获取好友列表失败
-                    childs = null;
-                    Log.e(CommonData.ETAG, "获取好友列表失败");
+                    Log.e(DataC.ETAG, "获取好友列表失败");
                 }
             }
         });
@@ -92,7 +71,7 @@ public class ContactsFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 String name = s.trim();
-                Log.i(CommonData.ITAG, "查询的字段为" + name);
+                Log.i(DataC.ITAG, "查询的字段为" + name);
                 if (name.equals("")) {
                     Toast.makeText(activity.getApplicationContext(), "字段为空", Toast.LENGTH_LONG).show();
                 } else {
@@ -103,7 +82,7 @@ public class ContactsFragment extends Fragment {
                             if (0 == i) {
                                 Toast.makeText(activity.getApplicationContext(), "好友添加发送成功", Toast.LENGTH_LONG).show();
                             } else {
-                                Log.e(CommonData.ETAG, "gotResult:  添加失败可能无此人\n" + s);
+                                Log.e(DataC.ETAG, "gotResult:  添加失败可能无此人\n" + s);
                                 Toast.makeText(activity.getApplicationContext(), "无此人", Toast.LENGTH_LONG).show();
                             }
                         }
@@ -124,5 +103,18 @@ public class ContactsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        searchView.setFocusable(true);
+        searchView.setFocusableInTouchMode(true);
+        searchView.requestFocus();
     }
 }

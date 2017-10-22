@@ -11,42 +11,46 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class User {
     @Id
-    private Long id;
-    private String name;
+    private Long userId;
+    private String userName;
+    private String nicename;
+
     @Transient
     private int tempUsageCount; // not persisted
 
-    @Generated(hash = 873297011)
-    public User(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    @Generated(hash = 1201156628)
+    public User(Long userId, String userName, String nicename) {
+        this.userId = userId;
+        this.userName = userName;
+        this.nicename = nicename;
     }
 
     @Generated(hash = 586692638)
     public User() {
     }
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return this.userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return this.userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public int getTempUsageCount() {
-        return tempUsageCount;
+    public String getNicename() {
+        return this.nicename;
     }
 
-    public void setTempUsageCount(int tempUsageCount) {
-        this.tempUsageCount = tempUsageCount;
+    public void setNicename(String nicename) {
+        this.nicename = nicename;
     }
+
 }
