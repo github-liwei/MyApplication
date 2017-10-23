@@ -24,7 +24,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="鸣人"/>
+                    android:text="鸣人"
+                    android:textColor="@android:color/black"/>
 
         </LinearLayout>
 
@@ -33,9 +34,9 @@
                 android:id="@+id/text_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
                 android:layout_marginTop="20dp"
-
-                android:text="hjkgkjk" android:background="@android:color/darker_gray"/>
+                android:background="@android:color/darker_gray"/>
     </LinearLayout>
 
     <LinearLayout
@@ -55,9 +56,9 @@
                 android:id="@+id/text_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
                 android:layout_marginTop="10dp"
-                android:background="@color/colorAccent"
-                android:text="hjhkj"/>
+                android:background="@color/colorAccent"/>
 
         <LinearLayout
                 android:layout_width="wrap_content"
@@ -73,7 +74,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="静香"/>
+                    android:text="静香" android:textColor="@android:color/black"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

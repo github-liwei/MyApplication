@@ -12,7 +12,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import cn.jpush.im.android.api.JMessageClient;
-import cn.jpush.im.android.api.content.CustomContent;
+import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.enums.ConversationType;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
@@ -20,7 +20,6 @@ import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
-import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
 import com.liwei.clock.config.LogMy;
 import com.liwei.clock.config.UserrtAssert;
@@ -28,13 +27,12 @@ import com.liwei.clock.config.UserrtAssert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static int ADDUSUR = 0;
     public final static String action = "MainActivityAction";
     //默认页面
-    private static int currentPage = 1;
+    private static int currentPage = 0;
     /**
      * 用于展示 消息、好友列表、新消息、设置 的Fragment
      */
@@ -72,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 用于对Fragment进行管理
      */
     private FragmentManager fragmentManager;
+    private static MessageEvent msgEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         initData();
     }
+
     void initView() {
         //监听事件开启
         LogMy.e(this.getClass(), "开启事件监听");
@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 根据传入的index参数来设置选中的tab页。
+     *
      * @param index 每个tab页对应的下标。0表示消息，1表示联系人，2表示动态，3表示设置。
      */
     private void setTabSelection(int index) {
@@ -168,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (index) {
             case 0:
                 //TODO 图片还没来 当点击了消息tab时，改变控件的图片和文字颜色
-                //messageImage.setImageResource(R.drawable.message_selected);
-                messageText.setTextColor(Color.WHITE);
+                messageImage.setImageResource(R.drawable.talk4);
+                messageText.setTextColor(Color.BLACK);
                 if (messageFragment == null) {
                     // 如果MessageFragment为空，则创建一个并添加到界面上
                     messageFragment = new MessageFragment();
@@ -180,9 +181,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case 1:
-                // 当点击了联系人tab时，改变控件的图片和文字颜色
-                //contactsImage.setImageResource(R.drawable.contacts_selected);
-                contactsText.setTextColor(Color.WHITE);
+                contactsImage.setImageResource(R.drawable.profile25);
+                contactsText.setTextColor(Color.BLACK);
                 if (contactsFragment == null) {
                     // 如果ContactsFragment为空，则创建一个并添加到界面上
                     contactsFragment = new ContactsFragment();
@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case 2:
                 // 当点击了动态tab时，改变控件的图片和文字颜色
-                //newsImage.setImageResource(R.drawable.news_selected);
-                newsText.setTextColor(Color.WHITE);
+                newsImage.setImageResource(R.drawable.flickr14);
+                newsText.setTextColor(Color.BLACK);
                 if (newsFragment == null) {
                     // 如果NewsFragment为空，则创建一个并添加到界面上
                     newsFragment = new NewsFragment();
@@ -207,9 +207,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case 3:
             default:
-                // 当点击了设置tab时，改变控件的图片和文字颜色
-                //settingImage.setImageResource(R.drawable.setting_selected);
-                settingText.setTextColor(Color.WHITE);
+                settingImage.setImageResource(R.drawable.settings38);
+                settingText.setTextColor(Color.BLACK);
                 if (settingFragment == null) {
                     // 如果SettingFragment为空，则创建一个并添加到界面上
                     settingFragment = new SettingFragment();
@@ -228,13 +227,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 清除掉所有的选中状态。
      */
     private void clearSelection() {
-        messageImage.setImageResource(android.R.drawable.ic_dialog_map);
+        messageImage.setImageResource(R.drawable.talk4);
         messageText.setTextColor(Color.parseColor("#82858b"));
-        contactsImage.setImageResource(android.R.drawable.ic_dialog_map);
+        contactsImage.setImageResource(R.drawable.profile25);
         contactsText.setTextColor(Color.parseColor("#82858b"));
-        newsImage.setImageResource(android.R.drawable.ic_dialog_map);
+        newsImage.setImageResource(R.drawable.flickr14);
         newsText.setTextColor(Color.parseColor("#82858b"));
-        settingImage.setImageResource(android.R.drawable.ic_dialog_map);
+        settingImage.setImageResource(R.drawable.settings38);
         settingText.setTextColor(Color.parseColor("#82858b"));
     }
 
@@ -288,67 +287,116 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void onEvent(MessageEvent event) {
-        Message msg = event.getMessage();
-        switch (msg.getContentType()) {
-            case custom:
-                final ConversationType targetType = event.getMessage().getTargetType();
-                final Intent intent = new Intent(action);
-                CustomContent customContent = (CustomContent) msg.getContent();
-                Map allStringValues = customContent.getAllStringValues();
-                if (targetType.equals(ConversationType.group)) {
-                    //TODO 还未实现
-                    LogMy.e(this.getClass(), "MessageEvent 来个组消息");
-//                    intent.putExtra(CREATE_GROUP_CUSTOM_KEY, allStringValues.toString());
-//                    intent.setFlags(1);
-                } else if (targetType.equals(ConversationType.single)) {
-                    String _userYou = ChatActivity.userYou.trim();
-                    if (_userYou.equals("")) {
-                        LogMy.e(this.getClass(), "MessageEvent userYou为空");
-                    } else {
-                        UserInfo fromUser = msg.getFromUser();
-                        if (fromUser.getUserName().equals(_userYou)) {
-                            LogMy.e(this.getClass(), "MessageEvent 来个single消息");
-                            intent.putExtra(ChatActivity.CHATKEY, allStringValues.toString());
-                            sendBroadcast(intent);
+    //    void handleMessage() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Intent intent = new Intent(action);
+//                Message msg = msgEvent.getMessage();
+//
+//                LogMy.e(this.getClass(), "MessageEvent message = " + msg);
+//                LogMy.e(this.getClass(), "比较 " + msg.getContentType().compareTo(ContentType.text));
+//                if (msg.getContentType().compareTo(ContentType.text) == 0) {
+//                    final ConversationType targetType = msg.getTargetType();
+//                    String str = ((TextContent) (msg.getContent())).getText();
+//
+//                    if (targetType.equals(ConversationType.group)) {
+//                        //TODO 还未实现
+//                        LogMy.e(this.getClass(), "MessageEvent 来个组消息");
+////                    intent.putExtra(CREATE_GROUP_CUSTOM_KEY, allStringValues.toString());
+////                    intent.setFlags(1);
+//                    } else if (targetType.equals(ConversationType.single)) {
+//                        String _userYou = ChatActivity.userYou.trim();
+//
+//                        LogMy.e(this.getClass(), "MessageEvent allStringValues = " + str);
+//                        if (_userYou.equals("")) {
+//                            LogMy.e(this.getClass(), "MessageEvent userYou为空");
+//                        } else {
+//                            UserInfo fromUser = msg.getFromUser();
+//                            LogMy.e(this.getClass(), "MessageEvent fromUser = " + fromUser.getUserName());
+//                            if (fromUser.getUserName().equals(_userYou)) {
+//                                intent.putExtra(ChatActivity.CHATKEY, "\n user：" + fromUser.getUserName() + "消息内容为： " + str);
+//                                sendBroadcast(intent);
+//                            } else {
+//                                LogMy.e(this.getClass(), "MessageEvent 您不在这个聊天窗口所以无法刷新页面");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }).start();
+//    }
+
+    //将消息用广播发送出去
+    void handleMessage() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(action);
+                Message msg = msgEvent.getMessage();
+                switch (msg.getContentType()) {
+                    case text:
+                        final ConversationType targetType = msgEvent.getMessage().getTargetType();
+                        if (targetType.equals(ConversationType.group)) {
+                            //TODO 还未实现 消息组
+                            LogMy.e(this.getClass(), "MessageEvent 来个组消息");
+                        } else if (targetType.equals(ConversationType.single)) {
+                            String _userYou = ChatActivity.userYou.trim();
+                            LogMy.e(this.getClass(), "MessageEvent _userYou = " + _userYou);
+                            if (_userYou.equals("")) {
+                                LogMy.e(this.getClass(), "MessageEvent userYou为空");
+                            } else {
+                                if (msg.getFromUser().getUserName().equals(_userYou)) {
+                                    LogMy.e(this.getClass(), "MessageEvent msg = " + msg);
+                                    //((TextContent)msg.getContent()).getText()
+                                    intent.putExtra(ChatActivity.CHATKEY, msg);
+                                    sendBroadcast(intent);
+                                } else {
+                                    //TODO 这里
+                                    LogMy.e(this.getClass(), "MessageEvent 您不在这个聊天窗口所以无法刷新页面");
+                                }
+                            }
                         }
-                        LogMy.e(this.getClass(), "MessageEvent 您不在这个聊天窗口所以无法刷新页面");
-                    }
+
+                        break;
+                    case custom:
+                        LogMy.e(this.getClass(), "接收到了custom消息");
+                        break;
+                    //其实sdk是会自动下载语音的.本方法是当sdk自动下载失败时可以手动调用进行下载而设计的.同理于缩略图下载
+                    case voice:
+                        LogMy.e(this.getClass(), "接收到了语音消息");
+                        break;
+                    case eventNotification:
+                        LogMy.e(this.getClass(), "接收到了 eventNotification");
+                        break;
+                    case image:
+                        LogMy.e(this.getClass(), "接收到了图片消息");
+                        break;
+                    default:
+                        LogMy.e(this.getClass(), "不知道是啥");
+                        break;
                 }
-                break;
-            //其实sdk是会自动下载语音的.本方法是当sdk自动下载失败时可以手动调用进行下载而设计的.同理于缩略图下载
-            case voice:
-                LogMy.e(this.getClass(), "接收到了语音消息");
-                break;
-            case eventNotification:
-                LogMy.e(this.getClass(), "接收到了 eventNotification");
-                break;
-            case image:
-                LogMy.e(this.getClass(), "接收到了图片消息");
-                break;
-            default:
-                break;
-        }
+            }
+        }).start();
+    }
+
+    public void onEvent(MessageEvent event) {
+        msgEvent = event;
+        handleMessage();
     }
 
     //离线消息事件
     public void onEventMainThread(OfflineMessageEvent event) {
-        Intent intent = new Intent(MainActivity.action);
+        Intent intent = new Intent(action);
+        intent.putExtra(ChatActivity.CHATKEY, "来了离线消息个数");
+        sendBroadcast(intent);
+
         Conversation conversation = event.getConversation();
         List<Message> newMessageList = event.getOfflineMessageList();//获取此次离线期间会话收到的新消息列表
         List<Integer> offlineMsgIdList = new ArrayList<>();
         if (conversation != null && newMessageList != null) {
             for (Message msg : newMessageList) {
                 offlineMsgIdList.add(msg.getId());
-            }
-
-            String _userYou = ChatActivity.userYou.trim();
-            if (_userYou.equals("")) {
-                LogMy.e(this.getClass(), "OfflineMessageEvent userYou为空");
-            } else {
-                LogMy.e(this.getClass(), "OfflineMessageEvent 来个离线single消息");
-                intent.putExtra(ChatActivity.CHATKEY, "离线消息个数" + newMessageList.size());
-                sendBroadcast(intent);
             }
             offlineMsgText.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
             offlineMsgText.append("会话类型 = " + conversation.getType() + "\n消息ID = " + offlineMsgIdList + "\n\n");

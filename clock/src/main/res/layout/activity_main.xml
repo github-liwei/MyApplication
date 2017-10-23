@@ -13,6 +13,8 @@
               android:id="@+id/tv_refresh_event_msg"/>
     <FrameLayout
             android:id="@+id/main_context"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
@@ -23,8 +25,7 @@
               android:id="@+id/tv_showOfflineMsg"/>
     <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@android:drawable/bottom_bar">
+            android:layout_height="60dp" android:background="@android:color/darker_gray">
 
         <RelativeLayout
                 android:id="@+id/message_layout"
@@ -40,10 +41,9 @@
 
                 <ImageView
                         android:id="@+id/message_image"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_gravity="center_horizontal"
-                        android:src="@android:drawable/ic_dialog_map"/>
+                        android:src="@drawable/talk4" android:layout_height="35dp"/>
 
                 <TextView
                         android:id="@+id/message_text"
@@ -51,7 +51,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="消息"
-                        android:textColor="#82858b"/>
+                        android:textColor="?attr/colorControlNormal"/>
             </LinearLayout>
         </RelativeLayout>
 
@@ -70,9 +70,9 @@
                 <ImageView
                         android:id="@+id/contacts_image"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@android:drawable/ic_dialog_map"/>
+                        android:src="@drawable/profile25"/>
 
                 <TextView
                         android:id="@+id/contacts_text"
@@ -80,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="联系人"
-                        android:textColor="#82858b"/>
+                        android:textColor="?attr/colorControlNormal"/>
             </LinearLayout>
         </RelativeLayout>
 
@@ -99,9 +99,9 @@
                 <ImageView
                         android:id="@+id/news_image"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@android:drawable/ic_dialog_map"/>
+                        android:src="@drawable/flickr14"/>
 
                 <TextView
                         android:id="@+id/news_text"
@@ -109,7 +109,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="动态"
-                        android:textColor="#82858b"/>
+                        android:textColor="@android:color/background_light"/>
             </LinearLayout>
         </RelativeLayout>
 
@@ -128,9 +128,9 @@
                 <ImageView
                         android:id="@+id/setting_image"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@android:drawable/ic_dialog_map"/>
+                        android:src="@drawable/settings38"/>
 
                 <TextView
                         android:id="@+id/setting_text"
@@ -138,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="设置"
-                        android:textColor="#82858b"/>
+                        android:textColor="?attr/colorControlNormal"/>
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

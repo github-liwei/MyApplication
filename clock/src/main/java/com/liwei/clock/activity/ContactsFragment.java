@@ -13,6 +13,7 @@ import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
 import com.liwei.clock.R;
+import com.liwei.clock.config.LogMy;
 import com.liwei.clock.interfaceclass.DataC;
 import com.liwei.clock.config.MyExpandableListViewAdapter;
 import com.liwei.clock.interfaceclass.impl.OnClickChilds;
@@ -57,12 +58,13 @@ public class ContactsFragment extends Fragment {
                         MyExpandableListViewAdapter adapter = new MyExpandableListViewAdapter(activity, list);
                         adapter.setOnInnerItemOnClickListener(new OnClickChilds());
                          /* 1. 设置适配器*/
+                        LogMy.e(this.getClass(), "onCreate initData 列表加载");
                         expandableListView.setAdapter(adapter);
-                        Log.e(DataC.ETAG, "列表加载");
+                        LogMy.e(this.getClass(), "onCreate initData列表完成");
                     }
                 } else {
                     //获取好友列表失败
-                    Log.e(DataC.ETAG, "获取好友列表失败");
+                    LogMy.e(this.getClass(), "onCreate initData 获取好友列表失败");
                 }
             }
         });
@@ -91,10 +93,9 @@ public class ContactsFragment extends Fragment {
                 }
                 return true;
             }
-
             @Override
             public boolean onQueryTextChange(String s) {
-                return false;
+                return true;
             }
         });
     }
@@ -103,6 +104,12 @@ public class ContactsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Log.e(this.getClass().getSimpleName(), "onDestroy: 正在销毁");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        searchView.clearFocus();
     }
 
     @Override

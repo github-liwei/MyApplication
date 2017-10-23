@@ -4,7 +4,7 @@
                 android:layout_height="60dp"
 >
     <ImageView
-            android:src="@android:drawable/ic_input_get"
+            android:src="@drawable/dollar89"
             android:id="@+id/iv_child_icon"
             android:layout_width="60dp"
             android:layout_height="60dp"/>

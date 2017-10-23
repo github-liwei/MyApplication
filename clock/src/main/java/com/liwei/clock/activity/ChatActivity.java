@@ -4,26 +4,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import cn.jpush.im.android.api.JMessageClient;
-import cn.jpush.im.android.api.content.MessageContent;
-import cn.jpush.im.android.api.content.TextContent;
-import cn.jpush.im.android.api.enums.ContentType;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.api.BasicCallback;
 import com.liwei.clock.R;
+import com.liwei.clock.config.ChatListViewAdapter;
 import com.liwei.clock.config.LogMy;
 import com.liwei.clock.interfaceclass.DataC;
 
@@ -32,15 +26,20 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
     public final static String CHATKEY = "ChatData";
     public static String userYou = "";
+
+    private ListView listView;
+
     private Button btSendMsg;
     private EditText etMsg;
-    private TextView tvMsg;
+    private ChatListViewAdapter adapter;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            tvMsg.append(intent.getExtras().getString(CHATKEY));
+            if (adapter != null) {
+                adapter.addMessage((Message) intent.getExtras().get(CHATKEY));
+            }
         }
     };
 
@@ -57,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
         initView();
         initData();
     }
+
 
     void initData() {
         //得到userYou信息
@@ -75,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
                             if (i == 0) {
                                 Log.i(this.getClass().getSimpleName(), "JMessageClient.createSingleTextMessage" + ", responseCode = " + i + " ; LoginDesc = " + s);
                                 Toast.makeText(getApplicationContext(), "发送成功", Toast.LENGTH_SHORT).show();
-                                tvMsg.append("\n user：" + JMessageClient.getMyInfo().getUserName() + "消息内容为： " + _msg);
+                                //tvMsg.append("\n user：" + JMessageClient.getMyInfo().getUserName() + "消息内容为： " + _msg);
                                 etMsg.setText("");
                             } else {
                                 Log.i(this.getClass().getSimpleName(), "JMessageClient.createSingleTextMessage" + ", responseCode = " + i + " ; LoginDesc = " + s);
@@ -113,7 +113,7 @@ public class ChatActivity extends AppCompatActivity {
     void initView() {
         btSendMsg = (Button) findViewById(R.id.bt_send);
         etMsg = (EditText) findViewById(R.id.et_meg);
-        tvMsg = (TextView) findViewById(R.id.tv_message);
+        listView = (ListView) findViewById(R.id.lv_chat_message);
     }
 
     /**
@@ -140,22 +140,15 @@ public class ChatActivity extends AppCompatActivity {
         //输出接收的消息
         if (conversation != null) {
             _messages = conversation.getAllMessage();
-            for (int i = 0; i < _messages.size(); i++) {
-//                Message mess = _messages.get(i);
-//                String text = null;
-//                if (mess != null) {
-//                    MessageContent content = mess.getContent();
-//                    if (content.getContentType() == ContentType.text) {
-//                        TextContent stringExtra = (TextContent) content;
-//                        text = stringExtra.getText();
-//                    }
-//                }
-                str.append("\n user：" + _messages.get(i).getFromUser().getUserName() + "消息内容为： " + ((TextContent) (_messages.get(i).getContent())).getText());
-            }
-            tvMsg.append(str);
+            adapter = new ChatListViewAdapter(this, _messages);
+
+            LogMy.e(this.getClass(), "onCreate initData 列表加载");
+            adapter.notifyDataSetChanged();
+            listView.setAdapter(adapter);
+            LogMy.e(this.getClass(), "onCreate initData 列表完成");
+
         } else {
-            tvMsg.setText("");
-            tvMsg.append(" 会话为null");
+
         }
     }
 
@@ -168,7 +161,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        userYou = "";
         LogMy.e(this.getClass(), "onStop: userYou = " + userYou);
         LogMy.e(this.getClass(), "onStop: 正在停止");
     }

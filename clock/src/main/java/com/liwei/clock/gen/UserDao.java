@@ -59,17 +59,17 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, User entity) {
         stmt.clearBindings();
-
+ 
         Long userId = entity.getUserId();
         if (userId != null) {
             stmt.bindLong(1, userId);
         }
-
+ 
         String userName = entity.getUserName();
         if (userName != null) {
             stmt.bindString(2, userName);
         }
-
+ 
         String nicename = entity.getNicename();
         if (nicename != null) {
             stmt.bindString(3, nicename);
@@ -79,17 +79,17 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, User entity) {
         stmt.clearBindings();
-
+ 
         Long userId = entity.getUserId();
         if (userId != null) {
             stmt.bindLong(1, userId);
         }
-
+ 
         String userName = entity.getUserName();
         if (userName != null) {
             stmt.bindString(2, userName);
         }
-
+ 
         String nicename = entity.getNicename();
         if (nicename != null) {
             stmt.bindString(3, nicename);

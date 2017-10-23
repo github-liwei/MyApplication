@@ -32,7 +32,6 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
         this.activity = activity;
         inflater = LayoutInflater.from(activity.getApplicationContext());
         childs.add(0, list);
-        Log.i(this.getClass().toString(), list.toString());
     }
 
     //注入事件的实现方法实体方法
@@ -88,9 +87,9 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
 
         //TODO b 子列表是否展开,判断后设置图标
         if (b) {
-            iv_group_icon.setImageResource(android.R.drawable.ic_input_add);
+            iv_group_icon.setImageResource(R.drawable.arrow554);
         } else {
-            iv_group_icon.setImageResource(android.R.drawable.ic_menu_view);
+            iv_group_icon.setImageResource(R.drawable.right65);
         }
 
         return view;

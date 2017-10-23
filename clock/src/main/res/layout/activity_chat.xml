@@ -7,34 +7,28 @@
               android:focusableInTouchMode="true"
               android:orientation="vertical"
               tools:context=".activity.ChatActivity">
-
     <ListView
             android:divider="@null"
-            android:id="@+id/lv_item_chat_message"
+            android:id="@+id/lv_chat_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"></ListView>
-
     <TextView
-            android:id="@+id/tv_message"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
+            android:layout_height="1dp"
             android:background="#898989"/>
-
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
         <Button
-                android:id="@+id/btn_left"
-                android:layout_width="wrap_content"
+                android:id="@+id/bt_left"
+                android:layout_width="52dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="其他"
-                android:textColor="#fff"/>
+        />
 
         <EditText
                 android:id="@+id/et_meg"
@@ -47,11 +41,10 @@
         <!--android:id="@+id/btn_right"-->
         <Button
                 android:id="@+id/bt_send"
-                android:layout_width="wrap_content"
+                android:layout_width="52dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="发送"
-                android:textColor="#fff"/>
+                android:text="发送"/>
 
     </LinearLayout>
 
