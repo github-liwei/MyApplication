@@ -16,6 +16,7 @@ import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.api.BasicCallback;
+import com.google.gson.jpush.Gson;
 import com.liwei.clock.R;
 import com.liwei.clock.config.ChatListViewAdapter;
 import com.liwei.clock.config.LogMy;
@@ -38,7 +39,10 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (adapter != null) {
-                adapter.addMessage((Message) intent.getExtras().get(CHATKEY));
+
+                //(String) intent.getExtras().get(CHATKEY),Message.class;
+                //LogMy.e(this.getClass(), " 我自己创建的message " + message);
+                //adapter.addMessage(message);
             }
         }
     };
@@ -57,6 +61,11 @@ public class ChatActivity extends AppCompatActivity {
         initData();
     }
 
+    void initView() {
+        btSendMsg = (Button) findViewById(R.id.bt_send);
+        etMsg = (EditText) findViewById(R.id.et_meg);
+        listView = (ListView) findViewById(R.id.lv_chat_message);
+    }
 
     void initData() {
         //得到userYou信息
@@ -68,14 +77,14 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final String _msg = etMsg.getText().toString();
                 if (_msg != null) {
-                    Message message = JMessageClient.createSingleTextMessage(userYou, null, _msg);
+                    final Message message = JMessageClient.createSingleTextMessage(userYou, null, _msg);
                     message.setOnSendCompleteCallback(new BasicCallback() {
                         @Override
                         public void gotResult(int i, String s) {
                             if (i == 0) {
                                 Log.i(this.getClass().getSimpleName(), "JMessageClient.createSingleTextMessage" + ", responseCode = " + i + " ; LoginDesc = " + s);
                                 Toast.makeText(getApplicationContext(), "发送成功", Toast.LENGTH_SHORT).show();
-                                //tvMsg.append("\n user：" + JMessageClient.getMyInfo().getUserName() + "消息内容为： " + _msg);
+                                adapter.addMessage(message);
                                 etMsg.setText("");
                             } else {
                                 Log.i(this.getClass().getSimpleName(), "JMessageClient.createSingleTextMessage" + ", responseCode = " + i + " ; LoginDesc = " + s);
@@ -108,12 +117,6 @@ public class ChatActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    void initView() {
-        btSendMsg = (Button) findViewById(R.id.bt_send);
-        etMsg = (EditText) findViewById(R.id.et_meg);
-        listView = (ListView) findViewById(R.id.lv_chat_message);
     }
 
     /**
@@ -171,5 +174,18 @@ public class ChatActivity extends AppCompatActivity {
         LogMy.e(this.getClass(), "onDestroy: 正在销毁");
         unregisterReceiver(broadcastReceiver);
         LogMy.e(this.getClass(), "onDestroy: 关闭广播服务");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("user_key", userYou);
+        userYou = "";
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        userYou = (String) savedInstanceState.getSerializable("dataset");
     }
 }

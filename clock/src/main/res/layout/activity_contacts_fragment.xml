@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/activity_menu"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -16,14 +16,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center">
-        <SearchView
+        <EditText
                 android:id="@+id/search_user"
                 android:layout_gravity="center"
                 android:queryHint="username"
-                android:iconifiedByDefault="false"
                 android:layout_height="wrap_content"
-                android:layout_width="300dp">
-        </SearchView>
+                android:layout_width="300dp"
+                android:imeOptions="actionSearch">
+        </EditText>
         <TextView
                 android:id="@+id/tv_user_add_message"
                 android:layout_gravity="center"

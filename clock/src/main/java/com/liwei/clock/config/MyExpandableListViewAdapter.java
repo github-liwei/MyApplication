@@ -1,6 +1,8 @@
 package com.liwei.clock.config;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +11,12 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
 import cn.jpush.im.android.api.model.UserInfo;
 import com.liwei.clock.R;
 import com.liwei.clock.interfaceclass.InnerItemOnclickListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +28,10 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
     private InnerItemOnclickListener mListener;
     private Activity activity;
     private LayoutInflater inflater;
+
+    private ImageView iv_child_icon;
+    private TextView tv_child_info;
+    private Button bt_child_id;
 
     private String[] group = new String[]{"我的好友"};
     private List<List<UserInfo>> childs = new ArrayList<>();
@@ -100,11 +108,23 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter imple
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_elv_child, null);
         }
-
         //TODO 设置  child 的图标和 信息
-        ImageView iv_child_icon = convertView.findViewById(R.id.iv_child_icon);
-        TextView tv_child_info = convertView.findViewById(R.id.tv_child_info);
-        Button bt_child_id = convertView.findViewById(R.id.bt_child_id);
+        iv_child_icon = convertView.findViewById(R.id.iv_child_icon);
+        tv_child_info = convertView.findViewById(R.id.tv_child_info);
+        bt_child_id = convertView.findViewById(R.id.bt_child_id);
+
+        childs.get(i).get(i1).getAvatarBitmap(new GetAvatarBitmapCallback() {
+            @Override
+            public void gotResult(int i, String s, Bitmap bitmap) {
+                if (i == 0) {
+                    LogMy.i(this.getClass(), "getAvatarBitmap " + ", responseCode = " + i + " ; registerDesc = " + s);
+                    iv_child_icon.setImageBitmap(bitmap);
+                } else {
+                    LogMy.e(this.getClass(), "getAvatarBitmap  " + ", responseCode = " + i + " ; registerDesc = " + s);
+                    iv_child_icon.setImageResource(R.drawable.dollar89);
+                }
+            }
+        });
 
         TextView tv_child_name = convertView.findViewById(R.id.tv_child_name);
         TextView tv_child_network = convertView.findViewById(R.id.tv_child_network);

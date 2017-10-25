@@ -12,7 +12,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import cn.jpush.im.android.api.JMessageClient;
-import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.enums.ConversationType;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
@@ -63,8 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView contactsText;
     private TextView newsText;
     private TextView settingText;
-    private TextView offlineMsgText;
-    private TextView refreshEventText;
+    private TextView tishi;
 
     /**
      * 用于对Fragment进行管理
@@ -103,8 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         contactsText = (TextView) findViewById(R.id.contacts_text);
         newsText = (TextView) findViewById(R.id.news_text);
         settingText = (TextView) findViewById(R.id.setting_text);
-        offlineMsgText = (TextView) findViewById(R.id.tv_showOfflineMsg);
-        refreshEventText = (TextView) findViewById(R.id.tv_refresh_event_msg);
+        tishi = (TextView) findViewById(R.id.tv_refresh_event_msg);
         messageLayout.setOnClickListener(this);
         contactsLayout.setOnClickListener(this);
         newsLayout.setOnClickListener(this);
@@ -260,19 +257,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //监听好友添加
     public void onEvent(ContactNotifyEvent event) {
         String fromUsername = event.getFromUsername();
-        if (ContactsFragment.tvUserAdd == null) {
-            LogMy.e(this.getClass(), "页面还没初始化");
-        } else {
             switch (event.getType()) {
                 case invite_received://收到好友邀请
                     LogMy.e(this.getClass(), "收到好友邀请" + fromUsername);
                     ADDUSUR = ADDUSUR++;
-                    ContactsFragment.tvUserAdd.setText(ADDUSUR);
                     break;
                 case invite_accepted://对方接收了你的好友邀请
                     LogMy.e(this.getClass(), "对方接收了你的好友邀请");
                     ADDUSUR = ADDUSUR++;
-                    ContactsFragment.tvUserAdd.setText(ADDUSUR);
                     break;
                 case invite_declined://对方拒绝了你的好友邀请
                     LogMy.e(this.getClass(), "对方拒绝了你的好友邀请");
@@ -284,49 +276,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 default:
                     break;
             }
-        }
     }
-
-    //    void handleMessage() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Intent intent = new Intent(action);
-//                Message msg = msgEvent.getMessage();
-//
-//                LogMy.e(this.getClass(), "MessageEvent message = " + msg);
-//                LogMy.e(this.getClass(), "比较 " + msg.getContentType().compareTo(ContentType.text));
-//                if (msg.getContentType().compareTo(ContentType.text) == 0) {
-//                    final ConversationType targetType = msg.getTargetType();
-//                    String str = ((TextContent) (msg.getContent())).getText();
-//
-//                    if (targetType.equals(ConversationType.group)) {
-//                        //TODO 还未实现
-//                        LogMy.e(this.getClass(), "MessageEvent 来个组消息");
-////                    intent.putExtra(CREATE_GROUP_CUSTOM_KEY, allStringValues.toString());
-////                    intent.setFlags(1);
-//                    } else if (targetType.equals(ConversationType.single)) {
-//                        String _userYou = ChatActivity.userYou.trim();
-//
-//                        LogMy.e(this.getClass(), "MessageEvent allStringValues = " + str);
-//                        if (_userYou.equals("")) {
-//                            LogMy.e(this.getClass(), "MessageEvent userYou为空");
-//                        } else {
-//                            UserInfo fromUser = msg.getFromUser();
-//                            LogMy.e(this.getClass(), "MessageEvent fromUser = " + fromUser.getUserName());
-//                            if (fromUser.getUserName().equals(_userYou)) {
-//                                intent.putExtra(ChatActivity.CHATKEY, "\n user：" + fromUser.getUserName() + "消息内容为： " + str);
-//                                sendBroadcast(intent);
-//                            } else {
-//                                LogMy.e(this.getClass(), "MessageEvent 您不在这个聊天窗口所以无法刷新页面");
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }).start();
-//    }
-
     //将消息用广播发送出去
     void handleMessage() {
         new Thread(new Runnable() {
@@ -349,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 if (msg.getFromUser().getUserName().equals(_userYou)) {
                                     LogMy.e(this.getClass(), "MessageEvent msg = " + msg);
                                     //((TextContent)msg.getContent()).getText()
+
                                     intent.putExtra(ChatActivity.CHATKEY, msg);
                                     sendBroadcast(intent);
                                 } else {
@@ -398,10 +349,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (Message msg : newMessageList) {
                 offlineMsgIdList.add(msg.getId());
             }
-            offlineMsgText.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
-            offlineMsgText.append("会话类型 = " + conversation.getType() + "\n消息ID = " + offlineMsgIdList + "\n\n");
+            tishi.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
+            tishi.append("会话类型 = " + conversation.getType() + "\n消息ID = " + offlineMsgIdList + "\n\n");
         } else {
-            offlineMsgText.setText("conversation is null or new message list is nul");
+            tishi.setText("conversation is null or new message list is nul");
         }
     }
 
@@ -410,10 +361,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Conversation conversation = event.getConversation();
         ConversationRefreshEvent.Reason reason = event.getReason();
         if (conversation != null) {
-            refreshEventText.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到ConversationRefreshEvent事件,待刷新的会话是%s.\n", conversation.getTargetId()));
-            refreshEventText.append("事件发生的原因 : " + reason + "\n");
+            tishi.append(String.format(Locale.SIMPLIFIED_CHINESE, "收到ConversationRefreshEvent事件,待刷新的会话是%s.\n", conversation.getTargetId()));
+            tishi.append("事件发生的原因 : " + reason + "\n");
         } else {
-            refreshEventText.setText("conversation is null");
+            tishi.setText("conversation is null");
         }
     }
 
@@ -425,8 +376,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == 8) {
-            offlineMsgText.setText("");
-            refreshEventText.setText("");
+            tishi.setText("");
         }
     }
 

@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
 import cn.jpush.im.android.api.model.UserInfo;
@@ -22,31 +25,28 @@ import java.util.List;
 
 public class ContactsFragment extends Fragment {
     /*可拓展列表视图*/
-    private ExpandableListView expandableListView;
-
-    private SearchView searchView;
-    public static TextView tvUserAdd;
-    private Activity activity;
+    @BindView(R.id.elv)
+    public ExpandableListView expandableListView;
+    @BindView(R.id.search_user)
+    public EditText searchView;
+    @BindView(R.id.tv_user_add_message)
+    public TextView tvUserAdd;
+    public Activity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View Layout = inflater.inflate(R.layout.activity_contacts_fragment, container, false);
+        View layout = inflater.inflate(R.layout.activity_contacts_fragment, container, false);
         activity = getActivity();
-        return Layout;
+        ButterKnife.bind(this, layout);
+        return layout;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initView();
         initData();
     }
 
-    void initView() {
-        expandableListView = activity.findViewById(R.id.elv);
-        searchView = activity.findViewById(R.id.search_user);
-        tvUserAdd = activity.findViewById(R.id.tv_user_add_message);
-    }
 
     void initData() {
         /* 1.1 创建一个adapter实例*/
@@ -69,11 +69,11 @@ public class ContactsFragment extends Fragment {
             }
         });
         //添加好友
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
-                String name = s.trim();
-                Log.i(DataC.ITAG, "查询的字段为" + name);
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                String name = textView.getText().toString().trim();
+                LogMy.e(this.getClass(), "查询的字段为" + name);
                 if (name.equals("")) {
                     Toast.makeText(activity.getApplicationContext(), "字段为空", Toast.LENGTH_LONG).show();
                 } else {
@@ -91,10 +91,6 @@ public class ContactsFragment extends Fragment {
                     });
                     searchView.clearFocus();
                 }
-                return true;
-            }
-            @Override
-            public boolean onQueryTextChange(String s) {
                 return true;
             }
         });

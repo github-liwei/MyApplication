@@ -47,9 +47,20 @@ public class RegisterActivity extends AppCompatActivity {
                         if (i == 0) {
                             Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_SHORT).show();
                             Log.i(DataC.ITAG, "JMessageClient.register " + ", responseCode = " + i + " ; registerDesc = " + s);
-                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            finish();
+                            JMessageClient.logout();
+                            JMessageClient.login(userName, password, new BasicCallback() {
+                                @Override
+                                public void gotResult(int i, String s) {
+                                    if (i == 0) {
+                                        Log.i(DataC.ITAG, "JMessageClient.login" + ", responseCode = " + i + " ; LoginDesc = " + s);
+                                        Intent intent = new Intent(RegisterActivity.this, UpdateUserActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Log.i(DataC.ITAG, "JMessageClient.login" + ", responseCode = " + i + " ; LoginDesc = " + s);
+                                    }
+                                }
+                            });
                         } else {
                             Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_SHORT).show();
                             Log.e(DataC.ETAG, "JMessageClient.register " + ", responseCode = " + i + " ; registerDesc = " + s);

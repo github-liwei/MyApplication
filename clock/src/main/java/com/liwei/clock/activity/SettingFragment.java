@@ -67,8 +67,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.bt_update_user_view:
                 //TODO  还没写完
-//                intent.setClass(context,);
-//                startActivity(intent);
+                intent.setClass(context, UpdateUserActivity.class);
+                startActivity(intent);
                 break;
             case R.id.bt_logout:
                 JMessageClient.logout();

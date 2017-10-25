@@ -8,4 +8,6 @@ public interface DataC {
     String ETAG = "*****EEE***";
     String ITAG = "*****III***";
     String USERYOU = "USERINFO";
+
+
 }
